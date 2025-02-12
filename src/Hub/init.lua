@@ -79,10 +79,10 @@ function Hub:CaptureException(ErrorMessage: string?)
 	
 	local Thread = coroutine.running()
 	local Event = {
-		exception = {
+		exception = {{
 			type = ErrorMessage,
 			thread_id = string.gsub(tostring(Thread), "thread: ", ""),
-		},
+		}},
 	}
 	
 	local EnvTrace = {}
@@ -98,8 +98,8 @@ function Hub:CaptureException(ErrorMessage: string?)
 	
 	if OriginEnv then
 		if OriginEnv.script then
-			Event.exception.module = tostring(OriginEnv.script)
-			Event.exception.thread_id = Event.exception.thread_id
+			Event.exception[1].module = tostring(OriginEnv.script)
+			Event.exception[1].thread_id = Event.exception[1].thread_id
 		end
 	end
 	
@@ -110,7 +110,7 @@ function Hub:CaptureException(ErrorMessage: string?)
 		memory_category = debug.getmemorycategory(),
 		
 		thread = Thread,
-		thread_id = Event.exception.thread_id,
+		thread_id = Event.exception[1].thread_id,
 	})
 end
 

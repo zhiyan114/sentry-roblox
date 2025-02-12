@@ -23,9 +23,9 @@ function Module:SetupOnce(AddGlobalEventProcessor, CurrentHub)
 		Message = (string.match(Message, ":%d+: (.+)") or Message)
 		
 		Hub:CaptureEvent({
-			exception = {
+			exception = {{
 				type = Message,
-			},
+			}},
 		}, {
 			message = Message,
 			traceback = StackTrace,

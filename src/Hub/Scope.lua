@@ -198,7 +198,20 @@ end
 	@param Hint Hint
 ]=]
 function Scope:ApplyToEvent(Event: Defaults.Event, Hint): Defaults.Event
-	local Event = Defaults:AggregateDictionaries(self, Event)
+	for Index, Value in self do
+		if typeof(Value) == "table" and typeof(Event[Index]) == "table" then
+			if Index == "exception" then
+				for ExceptionIndex, _ in Event.exception or {} do
+					Event.exception[ExceptionIndex] = Defaults:AggregateDictionaries(Event.exception[ExceptionIndex], Value)
+				end
+			else
+				Event[Index] = Defaults:AggregateDictionaries(Event[Index], Value)
+			end
+		else
+			Event[Index] = Value
+		end
+	end
+	
 	local EventProcessors = table.clone(Event._event_processors)
 	Event._event_processors = nil
 	

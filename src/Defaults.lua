@@ -121,7 +121,7 @@ export type Event = {
 		}}?,
 	}?,
 	
-	exception: {
+	exception: {{
 		type: string?,
 		value: string?,
 		module: string?,
@@ -140,7 +140,7 @@ export type Event = {
 			frames: {},
 			registers: {[string]: string}?,
 		}?,
-	}?,
+	}}?,
 	
 	user: {
 		id: number,
@@ -177,7 +177,7 @@ function Module:AggregateDictionaries(...)
 	local Aggregate = {}
 	
 	for _, Dictionary in ipairs{...} do
-		for Index, Value in next, Dictionary do
+		for Index, Value in Dictionary do
 			if typeof(Value) == "table" and typeof(Aggregate[Index]) == "table" then
 				Aggregate[Index] = self:AggregateDictionaries(Aggregate[Index], Value)
 			else
