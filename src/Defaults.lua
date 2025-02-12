@@ -191,7 +191,7 @@ end
 
 function Module:DeepCopy<T>(Table: T): T
 	if type(Table) == "table" then
-		local Table = setmetatable(table.clone(Table), getmetatable(Table))
+		Table = setmetatable(table.clone(Table), getmetatable(Table))
 		
 		for Index, Value in next, Table do
 			Table[self:DeepCopy(Index)] = self:DeepCopy(Value)

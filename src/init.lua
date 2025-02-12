@@ -2,11 +2,9 @@
 --// Initialization
 
 local RunService = game:GetService("RunService")
-local PlayerService = game:GetService("Players")
 
 local HubClass = require(script:WaitForChild("Hub"))
 local Defaults = require(script:WaitForChild("Defaults"))
-local Transport = require(script:WaitForChild("Transport"))
 local IntegrationsFolder = script:WaitForChild("Integrations")
 
 --- @class SDK

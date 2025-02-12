@@ -28,6 +28,8 @@ function Module:_GetRelay(): RemoteFunction | BindableFunction | nil
 	else
 		return script:FindFirstChild("ServerRelay"):: BindableFunction
 	end
+	
+	return
 end
 
 function Module:_Relay(...)
@@ -54,7 +56,7 @@ local function RequestAsync(...)
 	end
 	
 	local CallSuccess, Response = pcall(HttpService.RequestAsync, HttpService, ...)
-	local Response = (if CallSuccess then Response else {
+	Response = (if CallSuccess then Response else {
 		Body = "",
 		Headers = {},
 		
@@ -97,9 +99,9 @@ function Module:CaptureEnvelope(Payload)
 		return self:_Relay("CaptureEnvelope", Payload)
 	end
 	
-	local Payload = HttpService:JSONEncode(Payload)
+	local EncodedPayload = HttpService:JSONEncode(Payload)
 	local Envelope = HttpService:JSONEncode({event_id = HttpService:GenerateGUID(false)})
-	local Item = HttpService:JSONEncode({type = "session", length = #Payload})
+	local Item = HttpService:JSONEncode({type = "session", length = #EncodedPayload})
 	
 	return RequestAsync({
 		Url = self.BaseUrl .. "envelope/",
@@ -109,7 +111,7 @@ function Module:CaptureEnvelope(Payload)
 			["X-Sentry-Auth"] = self.AuthHeader
 		},
 		
-		Body = table.concat({Envelope, Item, Payload}, "\n"),
+		Body = table.concat({Envelope, Item, EncodedPayload}, "\n"),
 	})
 end
 

@@ -20,7 +20,7 @@ function Module:SetupOnce(AddGlobalEventProcessor, CurrentHub)
 	end)
 	
 	ScriptContext.Error:Connect(function(Message, StackTrace, Origin)
-		local Message = string.match(Message, ":%d+: (.+)") or Message
+		Message = (string.match(Message, ":%d+: (.+)") or Message)
 		
 		Hub:CaptureEvent({
 			exception = {
