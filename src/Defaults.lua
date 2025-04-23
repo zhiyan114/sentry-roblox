@@ -56,6 +56,12 @@ export type Options = {
 	
 	Transport: unknown,
 	ShutdownTimeout: number?,
+
+	-- https://develop.sentry.dev/sdk/telemetry/logs/#public-api
+	enableLogs: boolean?,
+	beforeSendLog: Filter<unknown>?,
+	logsSampleRate: number?,
+
 }
 
 Module.Options = {
@@ -85,6 +91,9 @@ Module.Options = {
 	
 	Transport = require(script.Parent:WaitForChild("Transport")),
 	ShutdownTimeout = 2,
+
+	enableLogs = false,
+	logsSampleRate = 1.0,
 }:: Options
 
 Module.Levels = {"fatal", "error", "warning", "info", "debug"}
