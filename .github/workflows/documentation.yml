@@ -22,18 +22,13 @@ jobs:
     
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         
       # Build steps
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 16.x
-          cache: "npm"
-          cache-dependency-path: "**/.github/workflows/*.yml"
+      - uses: oven-sh/setup-bun@v2
       - run: mv ./.github/README.md ./README.md
       - name: Build
-        run: npx moonwave build --code ./
+        run: bunx moonwave build --code ./
       
       # Upload steps
       - name: Upload artifact
@@ -51,7 +46,7 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: documentation
           path: build
@@ -60,7 +55,7 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: build
       - name: Deploy to GitHub Pages
