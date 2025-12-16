@@ -53,6 +53,11 @@ export type Options = {
 	BeforeSend: Filter<unknown>?,
 --	BeforeSendTransaction: Filter<unknown>?,
 	BeforeBreadcrumb: Filter<unknown>?,
+
+-- Logging stuff
+	enableLogs: boolean?,
+	beforeSendLog: Filter<unknown>?,
+
 	
 	Transport: unknown,
 	ShutdownTimeout: number?,
@@ -82,6 +87,8 @@ Module.Options = {
 	InAppExclude = {},
 	
 	WithLocals = true,
+
+	enableLogs = false,
 	
 	Transport = require(script.Parent:WaitForChild("Transport")),
 	ShutdownTimeout = 2,
