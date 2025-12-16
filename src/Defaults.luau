@@ -94,10 +94,11 @@ Module.Options = {
 	ShutdownTimeout = 2,
 }:: Options
 
-Module.Levels = {"fatal", "error", "warning", "info", "debug"}
+Module.Levels = {"fatal", "error", "warning", "info", "debug", "trace"}
 
 export type ValidJSONValues = string | number | boolean
-export type Level = "fatal" | "error" | "warning" | "info" | "debug"
+-- "trace" is only supported for structured logging
+export type Level = "fatal" | "error" | "warning" | "info" | "debug" | "trace" 
 export type Event = {
 	event_id: string?,
 	timestamp: string | number | nil,
