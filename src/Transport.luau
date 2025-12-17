@@ -3,6 +3,7 @@
 
 local RunService = game:GetService("RunService")
 local HttpService = game:GetService("HttpService")
+local Defaults = require(script.Parent.Defaults)
 
 --[=[
 	@class Transport
@@ -92,6 +93,11 @@ function Module:CaptureEvent(EncodedPayload)
 		
 		Body = EncodedPayload,
 	})
+end
+
+-- @TODO: Work on this later when dev-interface API is done
+function Module:CaptureLog(LogPayload: Defaults.StructLog)
+
 end
 
 function Module:CaptureEnvelope(Payload)

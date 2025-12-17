@@ -16,6 +16,7 @@ local ScopeClass = require(script:WaitForChild("Scope"))
 	known as async local or context local).
 ]=]
 local Hub = {}
+Hub.logger = {}
 
 --// Functions
 
@@ -24,7 +25,9 @@ local Hub = {}
 	@param Scope Scope
 ]=]
 function Hub.new(Client: ClientClass.Client?, Scope: ScopeClass.Scope?)
-	return setmetatable({Client = Client or ClientClass.new(), Scope = Scope or ScopeClass.new()}, {__index = Hub})
+	local mainTab = setmetatable({Client = Client or ClientClass.new(), Scope = Scope or ScopeClass.new()}, {__index = Hub})
+	mainTab.logger = setmetatable({ Hub = mainTab }, {__index = Hub.logger})
+	return mainTab
 end
 
 
@@ -66,6 +69,42 @@ function Hub:CaptureMessage(Message: string, Level: Defaults.Level? )
 			message = Message,
 		}
 	})
+end
+
+
+
+--[=[
+  @param body string or logger.fmt content
+  @param attribute any key/value (string, number, or bool)
+]=]
+function Hub.logger:info(body: string | Defaults.LogParamFormat, attribute: {[string]: any})
+	return self.Hub.Client:CaptureLog(body, attribute, "info", self.Hub.Scope);
+end
+
+--[=[
+  @param body string or logger.fmt content
+  @param attribute any key/value (string, number, or bool)
+]=]
+function Hub.logger:warn(body: string | Defaults.LogParamFormat, attribute: {[string]: any})
+	return self.Hub.Client:CaptureLog(body, attribute, "warn", self.Hub.Scope);
+end
+
+--[=[
+  @param body string or logger.fmt content
+  @param attribute any key/value (string, number, or bool)
+]=]
+function Hub.logger:error(body: string | Defaults.LogParamFormat, attribute: {[string]: any})
+	return self.Hub.Client:CaptureLog(body, attribute, "error", self.Hub.Scope);
+end
+--[=[
+	@param ... This follows 'string.format' style and sents param styled log to sentry
+]=]
+function Hub.logger.fmt(template: string, ...: string): Defaults.LogParamFormat
+	if #{...} < 2 then error("Hub.logger.fmt: Minimum of 2 params must be supplied") end
+	local content = {}
+	content.template = template
+	content.params = {...}
+	return content;
 end
 
 --[=[

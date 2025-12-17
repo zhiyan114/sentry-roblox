@@ -175,15 +175,24 @@ export type Event = {
 }
 
 -- https://develop.sentry.dev/sdk/telemetry/logs/#default-attributes
-export type LogAttribute = {
-	-- Default stuff
-	["sentry.environment"]: string?;
-	["sentry.release"]: string?;
-	["sentry.sdk.name"]: string?;
-	["sentry.sdk.version"]: string?;
-	["user.id"]: string?;
-	["user.name"]: string?;
-} | {[string]: any};
+export type StructLog = {
+	timestamp: number; -- Unix Epoch (in sec)
+	trace_id: string; -- Random 16 byte hex
+	level: Level;
+	body: string; -- Formatted Message
+	attributes: {
+		["sentry.environment"]: string?;
+		["sentry.release"]: string?;
+		["sentry.sdk.name"]: string?;
+		["sentry.sdk.version"]: string?;
+		["user.id"]: string?;
+		["user.name"]: string?;
+	} | {[string]: any};
+};
+export type LogParamFormat = {
+	template: string;
+	params: {string}
+}
 
 
 
