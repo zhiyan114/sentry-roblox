@@ -139,6 +139,10 @@ function Hub.logger:CaptureLog(body: string | Defaults.LogParamFormat, attribute
 				v = tostring(v); -- Force string if it's other than number or bool
 				oType = "string";
 			end
+			if(oType == "number") then
+				if v%1 == 0 then oType = "integer"
+				else oType = "double" end
+			end
 			LogPayload.attributes["sentry.message.parameter."..i-1] = {
 				value = v;
 				type = oType;
@@ -152,6 +156,10 @@ function Hub.logger:CaptureLog(body: string | Defaults.LogParamFormat, attribute
 		if(oType ~= "string" or oType ~= "number" or oType ~= "boolean") then
 			v = tostring(v); -- Force string if it's other than number or bool
 			oType = "string";
+		end
+		if(oType == "number") then
+				if v%1 == 0 then oType = "integer"
+				else oType = "double" end
 		end
 		LogPayload.attributes[k] = {
 			value = v,
