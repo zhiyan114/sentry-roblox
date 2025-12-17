@@ -28,7 +28,7 @@ Hub.logger = {}
 ]=]
 function Hub.new(Client: ClientClass.Client?, Scope: ScopeClass.Scope?)
 	local mainTab = setmetatable({Client = Client or ClientClass.new(), Scope = Scope or ScopeClass.new()}, {__index = Hub})
-	mainTab.logger = setmetatable({ Hub = mainTab }, {__index = Hub.logger})
+	mainTab.logger.Hub = mainTab
 	return mainTab
 end
 
@@ -170,9 +170,11 @@ function Hub.logger:CaptureLog(body: string | Defaults.LogParamFormat, attribute
 	end
 
 	-- Copy over user attributes
-	local userObj = Utils.flattenTable(self.Hub.Scope.user, "user")
-	for k,v in pairs(userObj) do
-		LogPayload.attributes[k] = v;
+	if self.Hub.Scope.user then
+		local userObj = Utils.flattenTable(self.Hub.Scope.user, "user")
+		for k,v in pairs(userObj) do
+			LogPayload.attributes[k] = v;
+		end
 	end
 
 	if self.Options and self.Options.beforeSendLog then

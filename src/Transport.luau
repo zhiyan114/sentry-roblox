@@ -3,7 +3,6 @@
 
 local RunService = game:GetService("RunService")
 local HttpService = game:GetService("HttpService")
-local Defaults = require(script.Parent.Defaults)
 local Utils = require(script.Parent.Utils)
 
 --[=[
@@ -115,7 +114,7 @@ function Module:flushLogs()
 			["X-Sentry-Auth"] = self.AuthHeader
 		},
 		
-		Body = table.concat({bodyHead, HttpService:JSONEncode(tempPayload)}, "\n"),
+		Body = "{}\n"..table.concat({HttpService:JSONEncode(bodyHead), HttpService:JSONEncode({items=tempPayload})}, "\n"),
 	})
 	tempPayload = {};
 end

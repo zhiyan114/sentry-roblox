@@ -74,8 +74,10 @@ end
 ]=]
 function Client:CaptureLog(LogPayload: Defaults.StructLog, Scope)
 	LogPayload["trace_id"] = string.gsub(HttpService:GenerateGUID(false), "-", "");
-	LogPayload.attributes["sentry.sdk.name"] = self.SDK_INTERFACE.name;
-	LogPayload.attributes["sentry.sdk.version"] = self.SDK_INTERFACE.version;
+	if self.SDK_INTERFACE then
+		LogPayload.attributes["sentry.sdk.name"] = self.SDK_INTERFACE.name;
+		LogPayload.attributes["sentry.sdk.version"] = self.SDK_INTERFACE.version;
+	end
 	
 
 	-- @TODO: Apply scope attributes afterward when that is done lol...
