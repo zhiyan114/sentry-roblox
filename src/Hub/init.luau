@@ -100,10 +100,10 @@ function Hub.logger:error(body: string | Defaults.LogParamFormat, attribute: {[s
 end
 
 --[=[
-	@param ... This follows 'string.format' style and sents param styled log to sentry
+	@param template 'string.format' text template
+	@param ... 'string.format' parameters to complete the template
 ]=]
 function Hub.logger:fmt(template: string, ...: string): Defaults.LogParamFormat
-	if #{...} < 2 then error("Hub.logger.fmt: Minimum of 2 params must be supplied") end
 	local content = {}
 	content.template = template
 	content.params = {...}
