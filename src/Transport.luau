@@ -100,6 +100,7 @@ local tempPayload = {}
 local timerSend = Utils.Timer.new(function() Module:flushLogs() end)
 function Module:flushLogs()
 	if(#tempPayload == 0) then return; end
+	if(RunService:IsClient()) then return; end
 	timerSend:cancel()
 	local bodyHead = {
 		type = "log",
