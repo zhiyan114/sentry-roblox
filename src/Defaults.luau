@@ -177,16 +177,12 @@ export type Event = {
 -- https://develop.sentry.dev/sdk/telemetry/logs/#default-attributes
 export type LogAttribute = {
 	-- Default stuff
-	sentry: {
-		environment: string?;
-		release: string?;
-		sdk: {
-			name: string;
-			version: string;
-		};
-	};
-	-- Implicitly configured attributes
-	user: ({ id: string?, name: string?} | {[string]: any})?
+	["sentry.environment"]: string?;
+	["sentry.release"]: string?;
+	["sentry.sdk.name"]: string?;
+	["sentry.sdk.version"]: string?;
+	["user.id"]: string?;
+	["user.name"]: string?;
 } | {[string]: any};
 
 
