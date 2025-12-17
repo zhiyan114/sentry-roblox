@@ -135,7 +135,7 @@ function Hub.logger:CaptureLog(body: string | Defaults.LogParamFormat, attribute
 		}
 		for i,v in ipairs(body.params) do
 			local oType = type(v);
-			if(oType ~= "string" or oType ~= "number" or oType ~= "boolean") then
+			if(oType ~= "string" and oType ~= "number" and oType ~= "boolean") then
 				v = tostring(v); -- Force string if it's other than number or bool
 				oType = "string";
 			end
@@ -153,13 +153,13 @@ function Hub.logger:CaptureLog(body: string | Defaults.LogParamFormat, attribute
 	-- Copy over attribute table
 	for k,v in pairs(attributes) do
 		local oType = type(v);
-		if(oType ~= "string" or oType ~= "number" or oType ~= "boolean") then
+		if(oType ~= "string" and oType ~= "number" and oType ~= "boolean") then
 			v = tostring(v); -- Force string if it's other than number or bool
 			oType = "string";
 		end
 		if(oType == "number") then
-				if v%1 == 0 then oType = "integer"
-				else oType = "double" end
+			if v%1 == 0 then oType = "integer"
+			else oType = "double" end
 		end
 		LogPayload.attributes[k] = {
 			value = v,
