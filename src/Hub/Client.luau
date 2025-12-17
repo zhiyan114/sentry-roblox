@@ -59,14 +59,14 @@ end
 	The client is disabled after this method is called.
 ]=]
 function Client:Close(Timeout: number?)
-	
+	Transport:flushLogs()
 end
 
 --[=[
 	Same as close difference is that the client is NOT disposed after invocation.
 ]=]
 function Client:Flush(Timeout: number?)
-	
+	Transport:flushLogs()
 end
 
 --[=[
@@ -79,7 +79,6 @@ function Client:CaptureLog(LogPayload: Defaults.StructLog, Scope)
 	
 
 	-- @TODO: Apply scope attributes afterward when that is done lol...
-	-- @TODO: Due to SDK design, beforeSendLog wouldn't be possible inside Client for now.
 	return Transport:CaptureLog(LogPayload)
 
 end

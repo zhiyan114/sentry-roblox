@@ -4,6 +4,7 @@
 local RunService = game:GetService("RunService")
 local HttpService = game:GetService("HttpService")
 local Defaults = require(script.Parent.Defaults)
+local Utils = require(script.Parent.Utils)
 
 --[=[
 	@class Transport
@@ -95,9 +96,38 @@ function Module:CaptureEvent(EncodedPayload)
 	})
 end
 
--- @TODO: Work on this later when dev-interface API is done
+local tempPayload = {}
+local timerSend = Utils.Timer.new(function() Module:flushLogs() end)
+function Module:flushLogs()
+	if(#tempPayload == 0) then return; end
+	timerSend:cancel()
+	local bodyHead = {
+		type = "log",
+		["item_count"] = #tempPayload,
+		content_type = "application/vnd.sentry.items.log+json"
+	}
+	RequestAsync({
+		Url = self.BaseUrl .. "envelope/",
+		Method = "POST",
+		Headers = {
+			["Content-Type"] = "application/x-sentry-envelope",
+			["X-Sentry-Auth"] = self.AuthHeader
+		},
+		
+		Body = table.concat({bodyHead, HttpService:JSONEncode(tempPayload)}, "\n"),
+	})
+	tempPayload = {};
+end
 function Module:CaptureLog(LogPayload: Defaults.StructLog)
-
+	if not self.InitThread then
+		self:_Relay("CaptureLog", LogPayload)
+	end
+	table.insert(tempPayload, LogPayload);
+	timerSend:start(5)
+	if(#tempPayload >= 20) then
+		timerSend:cancel()
+		Module:flushLogs()
+	end
 end
 
 function Module:CaptureEnvelope(Payload)

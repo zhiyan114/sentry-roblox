@@ -6,6 +6,8 @@ local Defaults = require(script.Parent:WaitForChild("Defaults"))
 local ClientClass = require(script:WaitForChild("Client"))
 local ScopeClass = require(script:WaitForChild("Scope"))
 
+local Utils = require(script.Parent.Utils)
+
 --[=[
 	@class Hub
 	
@@ -165,6 +167,12 @@ function Hub.logger:CaptureLog(body: string | Defaults.LogParamFormat, attribute
 			value = v,
 			type = oType
 		}
+	end
+
+	-- Copy over user attributes
+	local userObj = Utils.flattenTable(self.Hub.Scope.user, "user")
+	for k,v in pairs(userObj) do
+		LogPayload.attributes[k] = v;
 	end
 
 	if self.Options and self.Options.beforeSendLog then
