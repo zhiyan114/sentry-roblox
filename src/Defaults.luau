@@ -56,7 +56,7 @@ export type Options = {
 
 -- Logging stuff
 	enableLogs: boolean?,
-	beforeSendLog: Filter<unknown>?,
+	beforeSendLog: (log: StructLog) -> StructLog,
 
 	
 	Transport: unknown,

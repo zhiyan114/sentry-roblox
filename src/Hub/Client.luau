@@ -72,54 +72,14 @@ end
 --[=[
   Handles incoming events from hub and allow custom levels/scopes if needed
 ]=]
-function Client:CaptureLog(body: string | Defaults.LogParamFormat, attributes: {[string]: any}, level: Defaults.Level, Scope)
-	local LogPayload = {
-		timestamp = DateTime.now().UnixTimestamp;
-		trace_id = string.gsub(HttpService:GenerateGUID(false), "-", "");
-		level = level;
-		body = body;
-		attributes = {
-			["sentry.sdk.name"] = self.SDK_INTERFACE.name;
-			["sentry.sdk.version"] = self.SDK_INTERFACE.version;
-			["sentry.environment"] = Scope.environment;
-			["sentry.release"] = Scope.release;
-		};
-	}
-
-	-- Convert Formatted body to payload
-	if typeof(LogPayload.body) == "table" then
-		LogPayload.body = string.format(body.template, table.unpack(body.params));
-		LogPayload.attributes["sentry.message.template"] = {
-			value = body.template,
-			type = "string" -- I trust that this will only be a string...
-		}
-		for i,v in ipairs(body.params) do
-			local oType = type(v);
-			if(oType ~= "string" or oType ~= "number" or oType ~= "boolean") then
-				v = tostring(v); -- Force string if it's other than number or bool
-				oType = "string";
-			end
-			LogPayload.attributes["sentry.message.parameter."..i-1] = {
-				value = v;
-				type = oType;
-			}
-		end
-	end
-
-	-- Copy over attribute table
-	for k,v in pairs(attributes) do
-		local oType = type(v);
-		if(oType ~= "string" or oType ~= "number" or oType ~= "boolean") then
-			v = tostring(v); -- Force string if it's other than number or bool
-			oType = "string";
-		end
-		LogPayload.attributes[k] = {
-			value = v,
-			type = oType
-		}
-	end
+function Client:CaptureLog(LogPayload: Defaults.StructLog, Scope)
+	LogPayload["trace_id"] = string.gsub(HttpService:GenerateGUID(false), "-", "");
+	LogPayload.attributes["sentry.sdk.name"] = self.SDK_INTERFACE.name;
+	LogPayload.attributes["sentry.sdk.version"] = self.SDK_INTERFACE.version;
+	
 
 	-- @TODO: Apply scope attributes afterward when that is done lol...
+	-- @TODO: Due to SDK design, beforeSendLog wouldn't be possible inside Client for now.
 	return Transport:CaptureLog(LogPayload)
 
 end

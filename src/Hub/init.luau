@@ -78,7 +78,7 @@ end
   @param attribute any key/value (string, number, or bool)
 ]=]
 function Hub.logger:info(body: string | Defaults.LogParamFormat, attribute: {[string]: any})
-	return self.Hub.Client:CaptureLog(body, attribute, "info", self.Hub.Scope);
+	return self:CaptureLog(body, attribute, "info");
 end
 
 --[=[
@@ -86,7 +86,7 @@ end
   @param attribute any key/value (string, number, or bool)
 ]=]
 function Hub.logger:warn(body: string | Defaults.LogParamFormat, attribute: {[string]: any})
-	return self.Hub.Client:CaptureLog(body, attribute, "warn", self.Hub.Scope);
+	return self:CaptureLog(body, attribute, "warn");
 end
 
 --[=[
@@ -94,17 +94,77 @@ end
   @param attribute any key/value (string, number, or bool)
 ]=]
 function Hub.logger:error(body: string | Defaults.LogParamFormat, attribute: {[string]: any})
-	return self.Hub.Client:CaptureLog(body, attribute, "error", self.Hub.Scope);
+	return self:CaptureLog(body, attribute, "error");
 end
+
 --[=[
 	@param ... This follows 'string.format' style and sents param styled log to sentry
 ]=]
-function Hub.logger.fmt(template: string, ...: string): Defaults.LogParamFormat
+function Hub.logger:fmt(template: string, ...: string): Defaults.LogParamFormat
 	if #{...} < 2 then error("Hub.logger.fmt: Minimum of 2 params must be supplied") end
 	local content = {}
 	content.template = template
 	content.params = {...}
 	return content;
+end
+
+--[=[
+  @param body string or logger.fmt content
+  @param attributes custom log metadata (key/value)
+  @param level level
+]=]
+function Hub.logger:CaptureLog(body: string | Defaults.LogParamFormat, attributes: {[string]: any}, level: Defaults.Level)
+	if not body then return; end
+	if not self.Hub.Options.enableLogs then return; end
+	local LogPayload = {
+		timestamp = DateTime.now().UnixTimestamp;
+		level = level or "info"; -- set default level if needed
+		body = body;
+		attributes = {
+			["sentry.environment"] = self.Hub.Options.Environment;
+			["sentry.release"] = self.Hub.Options.Release;
+		};
+	}
+
+	-- Convert Formatted body to payload
+	if typeof(LogPayload.body) == "table" then
+		LogPayload.body = string.format(body.template, table.unpack(body.params));
+		LogPayload.attributes["sentry.message.template"] = {
+			value = body.template,
+			type = "string" -- I trust that this will only be a string...
+		}
+		for i,v in ipairs(body.params) do
+			local oType = type(v);
+			if(oType ~= "string" or oType ~= "number" or oType ~= "boolean") then
+				v = tostring(v); -- Force string if it's other than number or bool
+				oType = "string";
+			end
+			LogPayload.attributes["sentry.message.parameter."..i-1] = {
+				value = v;
+				type = oType;
+			}
+		end
+	end
+
+	-- Copy over attribute table
+	for k,v in pairs(attributes) do
+		local oType = type(v);
+		if(oType ~= "string" or oType ~= "number" or oType ~= "boolean") then
+			v = tostring(v); -- Force string if it's other than number or bool
+			oType = "string";
+		end
+		LogPayload.attributes[k] = {
+			value = v,
+			type = oType
+		}
+	end
+
+	if self.Options and self.Options.beforeSendLog then
+		local newPayload = self.Options.beforeSendLog(LogPayload);
+		if newPayload == nil then return; end
+		return self.Hub.Client:CaptureLog(newPayload, self.Hub.Scope)
+	end
+	return self.Hub.Client:CaptureLog(LogPayload, self.Hub.Scope)
 end
 
 --[=[
