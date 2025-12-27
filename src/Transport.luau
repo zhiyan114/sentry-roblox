@@ -96,11 +96,13 @@ function Module:CaptureEvent(EncodedPayload)
 end
 
 local tempPayload = {}
+local lockLogsTable = false;
 local timerSend = Utils.Timer.new(function() Module:flushLogs() end)
 function Module:flushLogs()
 	if(#tempPayload == 0) then return; end
 	if(RunService:IsClient()) then return; end
 	timerSend:cancel()
+	lockLogsTable = true;
 	local bodyHead = {
 		type = "log",
 		["item_count"] = #tempPayload,
@@ -117,11 +119,16 @@ function Module:flushLogs()
 		Body = "{}\n"..table.concat({HttpService:JSONEncode(bodyHead), HttpService:JSONEncode({items=tempPayload})}, "\n"),
 	})
 	tempPayload = {};
+	lockLogsTable = false;
 end
 function Module:CaptureLog(LogPayload: Defaults.StructLog)
 	if not self.InitThread then
 		self:_Relay("CaptureLog", LogPayload)
 	end
+	-- Table Lock prevents race-condition that might cause item(s)
+	-- to be inserted between item_count and body appending
+	-- during flushLogs process
+	if(lockLogsTable) then return; end
 	table.insert(tempPayload, LogPayload);
 	timerSend:start(5)
 	if(#tempPayload >= 20) then
