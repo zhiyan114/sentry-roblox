@@ -131,42 +131,15 @@ function Hub.logger:CaptureLog(body: string | Defaults.LogParamFormat, attribute
 	-- Convert Formatted body to payload
 	if typeof(LogPayload.body) == "table" then
 		LogPayload.body = string.format(body.template, table.unpack(body.params));
-		LogPayload.attributes["sentry.message.template"] = {
-			value = body.template,
-			type = "string" -- I trust that this will only be a string...
-		}
+		LogPayload.attributes["sentry.message.template"] = Utils.valToAttrVal(body.template)
 		for i,v in ipairs(body.params) do
-			local oType = type(v);
-			if(oType ~= "string" and oType ~= "number" and oType ~= "boolean") then
-				v = tostring(v); -- Force string if it's other than number or bool
-				oType = "string";
-			end
-			if(oType == "number") then
-				if v%1 == 0 then oType = "integer"
-				else oType = "double" end
-			end
-			LogPayload.attributes["sentry.message.parameter."..i-1] = {
-				value = v;
-				type = oType;
-			}
+			LogPayload.attributes["sentry.message.parameter."..i-1] = Utils.valToAttrVal(v)
 		end
 	end
 
 	-- Copy over attribute table
 	for k,v in pairs(attributes) do
-		local oType = type(v);
-		if(oType ~= "string" and oType ~= "number" and oType ~= "boolean") then
-			v = tostring(v); -- Force string if it's other than number or bool
-			oType = "string";
-		end
-		if(oType == "number") then
-			if v%1 == 0 then oType = "integer"
-			else oType = "double" end
-		end
-		LogPayload.attributes[k] = {
-			value = v,
-			type = oType
-		}
+		LogPayload.attributes[k] = Utils.valToAttrVal(v)
 	end
 
 	-- Copy over user attributes
@@ -183,6 +156,11 @@ function Hub.logger:CaptureLog(body: string | Defaults.LogParamFormat, attribute
 	end
 
 	-- Copy over Scope Attributes
+	if(self.Hub.Scope.attributes) then
+		for k,v in pairs(self.Hub.Scope.attributes) do
+			LogPayload.attributes[k] = Utils.valToAttrVal(v)
+		end
+	end
 
 	if self.Options and self.Options.beforeSendLog then
 		local newPayload = self.Options.beforeSendLog(LogPayload);

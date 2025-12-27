@@ -45,7 +45,24 @@ function flattenTable(tbl, prefix, out)
     return out
 end
 
+function valToAttrVal(val)
+    local oType = type(val);
+	if(oType ~= "string" and oType ~= "number" and oType ~= "boolean") then
+		val = tostring(val); -- Force string if it's other than number or bool
+		oType = "string";
+	end
+	if(oType == "number") then
+		if val%1 == 0 then oType = "integer"
+		else oType = "double" end
+	end
+    return {
+        value = val;
+		type = oType;
+    }
+end
+
 return {
-    Timer = Timer;
-    flattenTable = flattenTable;
+    Timer;
+    flattenTable;
+    valToAttrVal;
 }
