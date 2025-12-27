@@ -182,6 +182,8 @@ function Hub.logger:CaptureLog(body: string | Defaults.LogParamFormat, attribute
 		LogPayload.attributes.logger = self.Hub.Scope.logger;
 	end
 
+	-- Copy over Scope Attributes
+
 	if self.Options and self.Options.beforeSendLog then
 		local newPayload = self.Options.beforeSendLog(LogPayload);
 		if newPayload == nil then return; end
