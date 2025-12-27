@@ -146,13 +146,13 @@ function Hub.logger:CaptureLog(body: string | Defaults.LogParamFormat, attribute
 	if self.Hub.Scope.user then
 		local userObj = Utils.flattenTable(self.Hub.Scope.user, "user")
 		for k,v in pairs(userObj) do
-			LogPayload.attributes[k] = v;
+			LogPayload.attributes[k] = Utils.valToAttrVal(v);
 		end
 	end
 
 	-- Server/Client ctx
 	if self.Hub.Scope.logger then
-		LogPayload.attributes.logger = self.Hub.Scope.logger;
+		LogPayload.attributes.logger = Utils.valToAttrVal(self.Hub.Scope.logger);
 	end
 
 	-- Copy over Scope Attributes
