@@ -177,6 +177,11 @@ function Hub.logger:CaptureLog(body: string | Defaults.LogParamFormat, attribute
 		end
 	end
 
+	-- Server/Client ctx
+	if self.Hub.Scope.logger then
+		LogPayload.attributes.logger = self.Hub.Scope.logger;
+	end
+
 	if self.Options and self.Options.beforeSendLog then
 		local newPayload = self.Options.beforeSendLog(LogPayload);
 		if newPayload == nil then return; end
