@@ -132,8 +132,8 @@ function Hub.logger:CaptureLog(body: string | Defaults.LogParamFormat, level: De
 		level = level or "info"; -- set default level if needed
 		body = body;
 		attributes = {
-			["sentry.environment"] = self.Hub.Options.Environment;
-			["sentry.release"] = self.Hub.Options.Release;
+			["sentry.environment"] = self.Hub.Options and self.Hub.Options.Environment;
+			["sentry.release"] = self.Hub.Options and self.Hub.Options.Release;
 		};
 	}
 
@@ -182,9 +182,9 @@ function Hub:_CaptureLog(payload)
 	if self.Options and self.Options.beforeSendLog then
 		local newPayload = self.Options.beforeSendLog(payload);
 		if newPayload == nil then return; end
-		return self.Client:CaptureLog(newPayload, self.Hub.Scope)
+		return self.Client:CaptureLog(newPayload, self.Scope)
 	end
-	return self.Client:CaptureLog(payload, self.Hub.Scope)
+	return self.Client:CaptureLog(payload, self.Scope)
 end
 --[=[
 ]=]

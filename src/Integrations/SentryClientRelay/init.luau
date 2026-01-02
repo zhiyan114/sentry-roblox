@@ -30,7 +30,7 @@ function Module:SetupOnce(AddGlobalEventProcessor, CurrentHub)
 
 		if(EnvType == "log") then
 			-- Event = Client Log Payload
-			self.Hub:_CaptureLog(Event)
+			newHub:_CaptureLog(Event)
 		end
 	end)
 end
