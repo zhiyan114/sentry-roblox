@@ -129,7 +129,7 @@ function Module:flushLogs()
 end
 function Module:CaptureLog(LogPayload: Defaults.StructLog)
 	if not self.InitThread then
-		self:_Relay("CaptureLog", LogPayload)
+		return self:_Relay("CaptureLog", LogPayload)
 	end
 	-- Table Lock prevents race-condition that might cause item(s)
 	-- to be inserted between item_count and body appending

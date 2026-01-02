@@ -2,6 +2,7 @@
 --// Initialization
 
 local PlayerService = game:GetService("Players")
+local hubClass = require(script.Parent.Parent.Parent:WaitForChild("Hub"))
 
 local RemoteEvent = script.Parent:WaitForChild("RemoteEvent")
 local SentrySDK = require(script.Parent.Parent.Parent)
@@ -21,9 +22,8 @@ SentrySDK:ConfigureScope(function(Scope)
 		return nil
 	end)
 
-	local hub = SentrySDK:GetCurrentHub()
-	if(not hub.Options) then hub.Options = {} end
-	hub.Options.beforeSendLog = function(e)
+	if(not hubClass.Options) then hubClass.Options = {} end
+	hubClass.Options.beforeSendLog = function(e)
 		RemoteEvent:FireServer("log", e)
 		return;
 	end

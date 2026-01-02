@@ -19,7 +19,7 @@ local Utils = require(script.Parent.Utils)
 	known as async local or context local).
 ]=]
 local Hub = {}
-Hub.logger = {}
+local logger = {}
 
 --// Functions
 
@@ -29,7 +29,7 @@ Hub.logger = {}
 ]=]
 function Hub.new(Client: ClientClass.Client?, Scope: ScopeClass.Scope?)
 	local mainTab = setmetatable({Client = Client or ClientClass.new(), Scope = Scope or ScopeClass.new()}, {__index = Hub})
-	mainTab.logger.Hub = mainTab
+	mainTab.logger = setmetatable({Hub=mainTab}, {__index = logger})
 	return mainTab
 end
 
@@ -79,7 +79,7 @@ end
   @param body string or logger.fmt content
   @param attribute any key/value (string, number, or bool)
 ]=]
-function Hub.logger:debug(body: string | Defaults.LogParamFormat, attribute: {[string]: any}?)
+function logger:debug(body: string | Defaults.LogParamFormat, attribute: {[string]: any}?)
 	return self:CaptureLog(body, "debug", attribute);
 end
 
@@ -87,7 +87,7 @@ end
   @param body string or logger.fmt content
   @param attribute any key/value (string, number, or bool)
 ]=]
-function Hub.logger:info(body: string | Defaults.LogParamFormat, attribute: {[string]: any}?)
+function logger:info(body: string | Defaults.LogParamFormat, attribute: {[string]: any}?)
 	return self:CaptureLog(body, "info", attribute);
 end
 
@@ -95,7 +95,7 @@ end
   @param body string or logger.fmt content
   @param attribute any key/value (string, number, or bool)
 ]=]
-function Hub.logger:warn(body: string | Defaults.LogParamFormat, attribute: {[string]: any}?)
+function logger:warn(body: string | Defaults.LogParamFormat, attribute: {[string]: any}?)
 	return self:CaptureLog(body, "warn", attribute);
 end
 
@@ -103,7 +103,7 @@ end
   @param body string or logger.fmt content
   @param attribute any key/value (string, number, or bool)
 ]=]
-function Hub.logger:error(body: string | Defaults.LogParamFormat, attribute: {[string]: any}?)
+function logger:error(body: string | Defaults.LogParamFormat, attribute: {[string]: any}?)
 	return self:CaptureLog(body, "error", attribute);
 end
 
@@ -111,7 +111,7 @@ end
 	@param template 'string.format' text template
 	@param ... 'string.format' parameters to complete the template
 ]=]
-function Hub.logger:fmt(template: string, ...: string): Defaults.LogParamFormat
+function logger:fmt(template: string, ...: string): Defaults.LogParamFormat
 	local content = {}
 	content.template = template
 	content.params = {...}
@@ -123,7 +123,7 @@ end
   @param attributes custom log metadata (key/value)
   @param level level
 ]=]
-function Hub.logger:CaptureLog(body: string | Defaults.LogParamFormat, level: Defaults.Level, attributes: {[string]: any}?)
+function logger:CaptureLog(body: string | Defaults.LogParamFormat, level: Defaults.Level, attributes: {[string]: any}?)
 	if not body then return; end
 	-- Byapss for client since it doesn't have init options
 	if not (self.Hub.Options and self.Hub.Options.enableLogs) and not RunService:IsClient() then return; end
