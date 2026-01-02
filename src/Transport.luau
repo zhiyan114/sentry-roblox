@@ -103,11 +103,17 @@ function Module:flushLogs()
 	if(RunService:IsClient()) then return; end
 	timerSend:cancel()
 	lockLogsTable = true;
-	local bodyHead = {
-		type = "log",
-		["item_count"] = #tempPayload,
-		content_type = "application/vnd.sentry.items.log+json"
+
+	local bodyData = {
+		HttpService:JSONEncode({sent_at=DateTime.now().UnixTimestamp}),
+		HttpService:JSONEncode({
+			type = "log",
+			["item_count"] = #tempPayload,
+			content_type = "application/vnd.sentry.items.log+json"
+		}),
+		HttpService:JSONEncode({items=tempPayload})
 	}
+
 	RequestAsync({
 		Url = self.BaseUrl .. "envelope/",
 		Method = "POST",
@@ -116,7 +122,7 @@ function Module:flushLogs()
 			["X-Sentry-Auth"] = self.AuthHeader
 		},
 		
-		Body = "{}\n"..table.concat({HttpService:JSONEncode(bodyHead), HttpService:JSONEncode({items=tempPayload})}, "\n"),
+		Body = table.concat(bodyData, "\n"),
 	})
 	tempPayload = {};
 	lockLogsTable = false;
