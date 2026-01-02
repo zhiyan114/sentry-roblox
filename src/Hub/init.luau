@@ -6,6 +6,7 @@ local Defaults = require(script.Parent:WaitForChild("Defaults"))
 local ClientClass = require(script:WaitForChild("Client"))
 local ScopeClass = require(script:WaitForChild("Scope"))
 
+local RunService = game:GetService("RunService")
 local Utils = require(script.Parent.Utils)
 
 --[=[
@@ -124,7 +125,8 @@ end
 ]=]
 function Hub.logger:CaptureLog(body: string | Defaults.LogParamFormat, level: Defaults.Level, attributes: {[string]: any}?)
 	if not body then return; end
-	if not self.Hub.Options.enableLogs then return; end
+	-- Byapss for client since it doesn't have init options
+	if not (self.Hub.Options and self.Hub.Options.enableLogs) and not RunService:IsClient() then return; end
 	local LogPayload = {
 		timestamp = DateTime.now().UnixTimestamp;
 		level = level or "info"; -- set default level if needed
@@ -171,14 +173,19 @@ function Hub.logger:CaptureLog(body: string | Defaults.LogParamFormat, level: De
 		end
 	end
 
-	if self.Options and self.Options.beforeSendLog then
-		local newPayload = self.Options.beforeSendLog(LogPayload);
-		if newPayload == nil then return; end
-		return self.Hub.Client:CaptureLog(newPayload, self.Hub.Scope)
-	end
-	return self.Hub.Client:CaptureLog(LogPayload, self.Hub.Scope)
+	self.Hub:_CaptureLog(LogPayload)
 end
 
+--[=[
+]=]
+function Hub:_CaptureLog(payload)
+	if self.Options and self.Options.beforeSendLog then
+		local newPayload = self.Options.beforeSendLog(payload);
+		if newPayload == nil then return; end
+		return self.Client:CaptureLog(newPayload, self.Hub.Scope)
+	end
+	return self.Client:CaptureLog(payload, self.Hub.Scope)
+end
 --[=[
 ]=]
 function Hub:CaptureException(ErrorMessage: string?)

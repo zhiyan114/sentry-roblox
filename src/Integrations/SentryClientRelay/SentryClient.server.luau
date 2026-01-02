@@ -20,4 +20,11 @@ SentrySDK:ConfigureScope(function(Scope)
 		
 		return nil
 	end)
+
+	local hub = SentrySDK:GetCurrentHub()
+	if(not hub.Options) then hub.Options = {} end
+	hub.Options.beforeSendLog = function(e)
+		RemoteEvent:FireServer("log", e)
+		return;
+	end
 end)

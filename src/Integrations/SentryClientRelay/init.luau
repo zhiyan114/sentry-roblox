@@ -29,9 +29,8 @@ function Module:SetupOnce(AddGlobalEventProcessor, CurrentHub)
 		end
 
 		if(EnvType == "log") then
-			-- Event = Body/Formatted Log Data
-			-- Hint = Log Level
-			newHub:CaptureLog(Event, Hint)
+			-- Event = Client Log Payload
+			self.Hub:_CaptureLog(Event)
 		end
 	end)
 end
