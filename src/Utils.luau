@@ -62,7 +62,7 @@ function valToAttrVal(val)
 end
 
 return {
-    Timer;
-    flattenTable;
-    valToAttrVal;
+    Timer=Timer;
+    flattenTable=flattenTable;
+    valToAttrVal=valToAttrVal;
 }

@@ -14,15 +14,25 @@ function Module:SetupOnce(AddGlobalEventProcessor, CurrentHub)
 	
 	SentryClient.Enabled = true
 	RemoteEvent.Parent = script
-	RemoteEvent.OnServerEvent:Connect(function(Player, Event, Hint)
+	RemoteEvent.OnServerEvent:Connect(function(Player, EnvType, Event, Hint)
 		if not SentryClient.Enabled then
 			return
 		end
 		
-		SentrySDK:GetCurrentHub():Clone():ConfigureScope(function(Scope)
+		local newHub = SentrySDK:GetCurrentHub():Clone():ConfigureScope(function(Scope)
 			Scope.logger = "client"
 			Scope:SetUser(Player)
-		end):CaptureEvent(Event, Hint)
+		end)
+
+		if(EnvType == "event") then
+			newHub:CaptureEvent(Event, Hint)
+		end
+
+		if(EnvType == "log") then
+			-- Event = Body/Formatted Log Data
+			-- Hint = Log Level
+			newHub:CaptureLog(Event, Hint)
+		end
 	end)
 end
 

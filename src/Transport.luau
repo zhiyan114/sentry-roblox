@@ -105,7 +105,7 @@ function Module:flushLogs()
 	lockLogsTable = true;
 
 	local bodyData = {
-		HttpService:JSONEncode({sent_at=DateTime.now().UnixTimestamp}),
+		HttpService:JSONEncode({sent_at=DateTime.now():ToIsoDate()}),
 		HttpService:JSONEncode({
 			type = "log",
 			["item_count"] = #tempPayload,
