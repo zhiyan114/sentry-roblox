@@ -78,32 +78,32 @@ end
   @param body string or logger.fmt content
   @param attribute any key/value (string, number, or bool)
 ]=]
-function Hub.logger:debug(body: string | Defaults.LogParamFormat, attribute: {[string]: any})
-	return self:CaptureLog(body, attribute, "debug");
+function Hub.logger:debug(body: string | Defaults.LogParamFormat, attribute: {[string]: any}?)
+	return self:CaptureLog(body, "debug", attribute);
 end
 
 --[=[
   @param body string or logger.fmt content
   @param attribute any key/value (string, number, or bool)
 ]=]
-function Hub.logger:info(body: string | Defaults.LogParamFormat, attribute: {[string]: any})
-	return self:CaptureLog(body, attribute, "info");
+function Hub.logger:info(body: string | Defaults.LogParamFormat, attribute: {[string]: any}?)
+	return self:CaptureLog(body, "info", attribute);
 end
 
 --[=[
   @param body string or logger.fmt content
   @param attribute any key/value (string, number, or bool)
 ]=]
-function Hub.logger:warn(body: string | Defaults.LogParamFormat, attribute: {[string]: any})
-	return self:CaptureLog(body, attribute, "warn");
+function Hub.logger:warn(body: string | Defaults.LogParamFormat, attribute: {[string]: any}?)
+	return self:CaptureLog(body, "warn", attribute);
 end
 
 --[=[
   @param body string or logger.fmt content
   @param attribute any key/value (string, number, or bool)
 ]=]
-function Hub.logger:error(body: string | Defaults.LogParamFormat, attribute: {[string]: any})
-	return self:CaptureLog(body, attribute, "error");
+function Hub.logger:error(body: string | Defaults.LogParamFormat, attribute: {[string]: any}?)
+	return self:CaptureLog(body, "error", attribute);
 end
 
 --[=[
@@ -122,7 +122,7 @@ end
   @param attributes custom log metadata (key/value)
   @param level level
 ]=]
-function Hub.logger:CaptureLog(body: string | Defaults.LogParamFormat, attributes: {[string]: any}, level: Defaults.Level)
+function Hub.logger:CaptureLog(body: string | Defaults.LogParamFormat, level: Defaults.Level, attributes: {[string]: any}?)
 	if not body then return; end
 	if not self.Hub.Options.enableLogs then return; end
 	local LogPayload = {
@@ -145,8 +145,10 @@ function Hub.logger:CaptureLog(body: string | Defaults.LogParamFormat, attribute
 	end
 
 	-- Copy over attribute table
-	for k,v in pairs(attributes) do
-		LogPayload.attributes[k] = Utils.valToAttrVal(v)
+	if attributes then
+		for k,v in pairs(attributes) do
+			LogPayload.attributes[k] = Utils.valToAttrVal(v)
+		end
 	end
 
 	-- Copy over user attributes
