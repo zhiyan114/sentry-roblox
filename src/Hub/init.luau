@@ -74,6 +74,13 @@ function Hub:CaptureMessage(Message: string, Level: Defaults.Level? )
 end
 
 
+--[=[
+  @param body string or logger.fmt content
+  @param attribute any key/value (string, number, or bool)
+]=]
+function Hub.logger:debug(body: string | Defaults.LogParamFormat, attribute: {[string]: any})
+	return self:CaptureLog(body, attribute, "debug");
+end
 
 --[=[
   @param body string or logger.fmt content
